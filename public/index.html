@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naturels Voices</title>
+<meta name="theme-color" content="#3d5afe">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10h2v4H3zm4-4h2v12H7zm4-3h2v18h-2zm4 5h2v8h-2zm4 3h2v2h-2z"/></svg></span>
+    <span class="brand-name">Naturels <b>Voices</b></span>
+  </div>
+  <div class="top-actions">
+    <button class="btn primary" id="btnInstall" type="button" hidden title="Installer Naturels Voices comme une application sur cet ordinateur">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v11H4zm2 2v7h12V6zM8 18h8v2H8zm3-9V7h2v2h2l-3 3-3-3z"/></svg><span class="hide-sm">Installer l’application</span>
+    </button>
+    <button class="btn ghost" id="btnImport" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 21h2V10.8l3.6 3.6 1.4-1.4-6-6-6 6 1.4 1.4 3.6-3.6zM4 3h16v2H4z"/></svg><span class="hide-sm">Importer</span>
+    </button>
+    <input type="file" id="file" accept=".txt,.md,.docx,.pdf,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="side">
+    <button class="btn primary new-proj" id="btnNewProject" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Nouveau projet
+    </button>
+    <section class="side-sec">
+      <h2 class="side-title">Mes projets</h2>
+      <div class="proj-list" id="projList"></div>
+    </section>
+    <button class="link" id="btnDemo" type="button">Créer un projet d’exemple (dialogue)</button>
+    <p class="side-hint">Chaque texte d’un projet a sa propre voix : cliquez sur l’avatar à gauche d’un texte pour la changer. Pendant la lecture, cliquez sur un mot pour reprendre à cet endroit.</p>
+  </aside>
+
+  <main class="doc" id="doc">
+    <p class="banner" id="banner" role="alert" hidden></p>
+    <div class="proj-head">
+      <input id="projName" class="proj-name" type="text" aria-label="Nom du projet" placeholder="Projet sans titre" maxlength="80">
+      <div class="stats"><span id="sBlocks">1 texte</span><span id="sWords">0 mots</span><span id="sTime">≈ 0 min</span></div>
+    </div>
+    <div class="blocks" id="blocks"></div>
+    <button class="add-block" id="btnAddBlock" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Nouveau texte
+    </button>
+    <p class="drop-hint">Glissez un fichier .txt, .docx ou .pdf ici pour l’ajouter comme nouveau texte.</p>
+  </main>
+</div>
+
+<footer class="player">
+  <div class="progress"><i id="bar"></i></div>
+  <div class="player-in">
+    <div class="p-left">
+      <span class="av av-lg" id="nowAv"></span>
+      <span class="vb-text">
+        <small id="nowLbl">Voix</small>
+        <b id="nowName">Chargement…</b>
+      </span>
+    </div>
+
+    <div class="p-center">
+      <div class="transport">
+        <button class="icon-btn" id="btnPrev" type="button" disabled title="Phrase précédente" aria-label="Phrase précédente">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg>
+        </button>
+        <button class="play" id="btnPlay" type="button" disabled>
+          <svg viewBox="0 0 24 24" id="icoPlay" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg><span id="playLbl" class="sr">Lire</span>
+        </button>
+        <button class="icon-btn" id="btnNext" type="button" disabled title="Phrase suivante" aria-label="Phrase suivante">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+        </button>
+        <button class="icon-btn" id="btnStop" type="button" aria-label="Arrêter" title="Arrêter" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+      </div>
+      <div class="status" id="status">Chargement des voix…</div>
+    </div>
+
+    <div class="p-right">
+      <div class="pop-wrap">
+        <button class="pill" id="btnSpeed" type="button" aria-haspopup="true" aria-expanded="false" title="Vitesse et réglages">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a9 9 0 0 0-7.8 13.5l1.7-1A7 7 0 1 1 19 12h2a9 9 0 0 0-9-8zm4.2 3.4-5.6 4.2a2 2 0 1 0 2.8 2.8z"/></svg>
+          <output id="oRate">1.0×</output>
+        </button>
+        <div class="pop" id="speedPop" hidden>
+          <div class="field"><label class="lbl" for="rate">Vitesse <span id="oRate2"></span></label><input type="range" id="rate" min="0.5" max="2" step="0.05" value="1"></div>
+          <div class="field"><label class="lbl" for="pitch">Tonalité <output id="oPitch">0 %</output></label><input type="range" id="pitch" min="-30" max="30" step="1" value="0"></div>
+          <div class="field"><label class="lbl" for="volume">Volume <output id="oVol">100 %</output></label><input type="range" id="volume" min="0" max="1" step="0.05" value="1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Choix de la voix -->
+<div class="modal" id="picker" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+    <div class="modal-head">
+      <h2 id="pickTitle">Choisir une voix</h2>
+      <button class="icon-btn" id="pickClose" type="button" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z"/></svg>
+      </button>
+    </div>
+    <div class="modal-filters">
+      <select id="pickLang" aria-label="Langue"></select>
+      <div class="seg" role="group" aria-label="Genre">
+        <button type="button" data-g="" class="on">Toutes</button>
+        <button type="button" data-g="Femme">Femmes</button>
+        <button type="button" data-g="Homme">Hommes</button>
+      </div>
+      <input type="search" id="pickSearch" placeholder="Rechercher…" aria-label="Rechercher une voix">
+    </div>
+    <div class="voice-grid" id="pickList"></div>
+  </div>
+</div>
+
+<audio id="audio" preload="auto"></audio>
+<script src="app.js"></script>
+</body>
+</html>
